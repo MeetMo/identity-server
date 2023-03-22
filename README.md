@@ -1,4 +1,5 @@
 # Curity Helm Chart Repository
+helm repo add identity https://github.com/MeetMo/identity-server/
 
 [![Quality](https://img.shields.io/badge/quality-test-yellow)](https://curity.io/resources/code-examples/status/)
 [![Availability](https://img.shields.io/badge/availability-source-blue)](https://curity.io/resources/code-examples/status/)
