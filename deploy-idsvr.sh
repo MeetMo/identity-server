@@ -38,6 +38,9 @@ fi
 #
 kubectl delete secret identity-cluster-ssl 2>/dev/null
 kubectl create secret tls identity-cluster-ssl --cert=./certs/certificate.crt --key=./certs/private.key
+
+
+
 if [ $? -ne 0 ]; then
   echo "Problem encountered creating the Kubernetes TLS secret for the Curity Identity Server"
   exit 1
@@ -50,6 +53,7 @@ fi
 #
 kubectl delete configmap idsvr-configmap 2>/dev/null
 kubectl create configmap idsvr-configmap --from-file='main-config=./idsvr/idsvr-config-backup.xml'
+
 if [ $? -ne 0 ]; then
   echo "Problem encountered creating the config map for the Identity Server"
   exit 1
@@ -64,6 +68,7 @@ helm repo add curity https://curityio.github.io/idsvr-helm 1>/dev/null
 helm repo update 1>/dev/null
 helm uninstall curity 2>/dev/null
 helm install curity curity/idsvr --values=idsvr/helm-values.yaml
+
 if [ $? -ne 0 ]; then
   echo 'Problem encountered running the Helm Chart for the Curity Identity Server'
   exit 1
@@ -78,7 +83,7 @@ fi
 # - curl 'https://login.curity.local/oauth/v2/oauth-anonymous/.well-known/openid-configuration'
 #
 # Inside the cluster we can use these HTTP URLs:
-#
-# curl -u 'admin:Password1' 'http://curity-idsvr-admin-svc:6749/admin/api/restconf/data?depth=unbounded&content=config'
+# #
+curl -u 'admin:noentry9' 'http://curity-idsvr-admin-svc:6749/admin/api/restconf/data?depth=unbounded&content=config'
 # curl -k 'http://curity-idsvr-runtime-svc:8443/oauth/v2/oauth-anonymous/.well-known/openid-configuration'
-#
+# #

@@ -19,7 +19,7 @@ networkpolicy:
 curity:
   healthCheckPort: 4465
   adminUiPort: 6749
-  adminUiHttp: false
+  adminUiHttp: true
 
   admin:
     role: admin
@@ -98,10 +98,10 @@ curity:
     
     service:
       type: ClusterIP
-      port: 8443
+      port: 7455
       annotations: {}
     serviceAccount:
-      name:
+      name: 
     podDisruptionBudget:
       minAvailable:
       maxUnavailable:
@@ -142,18 +142,30 @@ curity:
 
   config:
     uiEnabled: true
-    backup: false
+    backup: true
     password: noentry9
-    skipInstall: false
+    skipInstall: true
     encryptionKey:
     environmentVariableSecrets: []
     environmentVariableConfigMaps: []
-    configuration: 
-     - configMapRef:
-         name: idsvr-configmap
-         items:
-           - key: main-config
-             path: idsvr-config-backup.xml
+    # configuration:
+    #   - secretRef:
+    #     name: cfg-secret-config-backup
+    #     items:
+    #     - key: <DATE>-<TRANSACTION_ID>.xml
+    #       path: config-backup.xml
+    
+    #  - configMapRef:
+    #      name: idsvr-configmap
+    #      items:
+    #        - key: main-config
+    #          path: idsvr-config-backup.xml
+             
+    #  - configMapRef:
+    #      name: idsvr-configmap
+    #      items:
+    #        - key: main-config
+    #          path: idsvr-config-backup.xml
 #      - secretRef:
 #          name: cfg-secret
 #          items:
@@ -181,15 +193,25 @@ ingress:
   annotations: 
     kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+    nginx.org/proxy-connect-timeout: 3600s
+    nginx.org/proxy-read-timeout: 3600s
+    nginx.org/proxy-send-timeout: 3600s
+    
   runtime:
     enabled: true
     host: auth.webmo.cc
     secretName: identity-cluster-ssl
-
+    paths:
+      - /
+    pathType: ImplementationSpecific
   admin:
     enabled: true
-    host: admin.auth.webmo.cc
-    secretName: identity-cluster-ssl
+    host: manage-auth.webmo.cc
+    secretName:  identity-cluster-ssl
+    paths:
+      - /
+    pathType: ImplementationSpecific
+  
 
 logging:
   resources: {}

@@ -11,6 +11,10 @@ COPY idsvr/log4j2.xml /opt/idsvr/etc/
 
 # Extra tools, for development troubleshooting only
 USER root
+COPY haapi-web-example/* /opt/idsvr/usr/share/webroot/
 RUN apt-get update
 RUN apt-get install curl -y
 USER idsvr
+
+expose 6749
+expose 7455
