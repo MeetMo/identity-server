@@ -1,0 +1,18 @@
+version: '3'
+services:
+  curity:
+    build:
+      context: .
+      dockerfile: ./Dockerfile      
+      args:
+        CURITY_VERSION: ${CURITY_VERSION} # ${CURITY_VERSION} variable is passed in by build.sh
+    image: curity-idsvr:${CURITY_VERSION}
+    ports: 
+      - 6749:6749
+      - 8443:8443
+    volumes:
+      - ./license.json:/opt/idsvr/etc/init/license/license.json
+    environment:
+      - PASSWORD=${PASSWORD} # curity admin password  , passed in by build.sh
+    restart: always
+    container_name: curity_${CURITY_VERSION}
