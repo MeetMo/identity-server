@@ -9,19 +9,17 @@
 #
 cd "$(dirname "${BASH_SOURCE[0]}")"
 
-#
-# First check prerequisites
-#
-if [ ! -f './idsvr/license.json' ]; then
-  echo "Please provide a license.json file in the idsvr folder in order to deploy the system"
-  exit 1
-fi
 
 
-if [ ! -f './idsvr/patch_idsvr' ]; then
-  echo "Please provide patch_idsvr file in the idsvr folder in order to deploy the system"
-  exit 1
-fi
+
+# kubectl delete configmap patch_idsvr 2>/dev/null
+# kubectl create configmap patchidsvr --from-file='main-config=./idsvr/patch_idsvr'
+
+# if [ $? -ne 0 ]; then
+#   echo "Problem encountered creating the patch_idsvr  for the Identity Server"
+#   exit 1
+# fi
+
 
 #
 # This is used by Curity developers
@@ -29,7 +27,7 @@ fi
 
 # Build a custom docker image with some extra resources
 #
-docker build -f idsvr/Dockerfile .
+docker build -f idsvr/Dockerfile . -t nexhe/custom_curity:latest
 if [ $? -ne 0 ]; then
   echo "Problem encountered building the Identity Server custom docker image"
   exit 1
@@ -60,6 +58,8 @@ fi
 #
 # Run the Curity Identity Server Helm Chart to deploy an admin node and two runtime nodes
 #
+
+kubectl apply -f 'idsvr/configmap.yml'
 helm repo add curity https://curityio.github.io/idsvr-helm 1>/dev/null
 helm repo update 1>/dev/null
 helm uninstall curity 2>/dev/null
@@ -68,6 +68,8 @@ if [ $? -ne 0 ]; then
   echo 'Problem encountered running the Helm Chart for the Curity Identity Server'
   exit 1
 fi
+
+# helm upgrade curity curity/idsvr --values=idsvr/helm-values.yaml
 
 #
 # Once the pods come up we can call them over these HTTPS URLs externally:
